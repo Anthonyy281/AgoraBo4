@@ -1,0 +1,106 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des Jeux{% endblock %}
+
+{% block body %}
+    <h1>Liste des Jeux Vidéo</h1>
+
+    {% if notification != 'rien' %}
+        <div class="alert alert-success">
+            {{ notification }} avec succès !
+        </div>
+    {% endif %}
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Référence</th>
+                <th>Nom</th>
+                <th>Plateforme</th>
+                <th>PEGI</th>
+                <th>Genre</th>
+                <th>Marque</th>
+                <th>Prix</th>
+                <th>Date de Parution</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for jeu in tbJeux %}
+                <tr>
+                    <td>{{ jeu.identifiant }}</td>
+                    <td>{{ jeu.libelle }}</td>
+                    <td>{{ jeu.libPlateforme }}</td>
+                    <td>{{ jeu.ageLimite }} ({{ jeu.descPegi }})</td>
+                    <td>{{ jeu.libGenre }}</td>
+                    <td>{{ jeu.nomMarque }}</td>
+                    <td>{{ jeu.prix }}</td>
+                    <td>{{ jeu.dateParution|date('d-m-Y') }}</td>
+                    <td>
+                        <form action="{{ path('jeux_demandermodifier') }}" method="post">
+                            <input type="hidden" name="txtRefJeu" value="{{ jeu.identifiant }}">
+                            <button type="submit" class="btn btn-warning">Modifier</button>
+                        </form>
+                        <form action="{{ path('jeux_supprimer') }}" method="post" onsubmit="return confirm('Voulez-vous vraiment supprimer ce jeu ?');">
+                            <input type="hidden" name="txtRefJeu" value="{{ jeu.identifiant }}">
+                            <button type="submit" class="btn btn-danger">Supprimer</button>
+                        </form>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="9">Aucun jeu trouvé.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h2>Ajouter un Jeu</h2>
+    <form action="{{ path('jeux_ajouter') }}" method="post">
+        <div class="form-group">
+            <label for="txtNomJeu">Nom du jeu</label>
+            <input type="text" name="txtNomJeu" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="txtIdPlateformeJeu">Plateforme</label>
+            <select name="txtIdPlateformeJeu" class="form-control">
+                {% for plateforme in tbPlateformes %}
+                    <option value="{{ plateforme.idPlateforme }}">{{ plateforme.libPlateforme }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="txtIdPegiJeu">PEGI</label>
+            <select name="txtIdPegiJeu" class="form-control">
+                {% for pegi in tbPegis %}
+                    <option value="{{ pegi.idPegi }}">{{ pegi.ageLimite }} - {{ pegi.descPegi }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="txtIdGenreJeu">Genre</label>
+            <select name="txtIdGenreJeu" class="form-control">
+                {% for genre in tbGenres %}
+                    <option value="{{ genre.idGenre }}">{{ genre.libGenre }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="txtIdMarqueJeu">Marque</label>
+            <select name="txtIdMarqueJeu" class="form-control">
+                {% for marque in tbMarques %}
+                    <option value="{{ marque.idMarque }}">{{ marque.nomMarque }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="prixJeu">Prix</label>
+            <input type="number" step="0.01" name="prixJeu" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="txtDateParutionJeu">Date de parution</label>
+            <input type="date" name="txtDateParutionJeu" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Ajouter</button>
+    </form>
+{% endblock %}
